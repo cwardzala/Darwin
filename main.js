@@ -1,9 +1,9 @@
 require.config({
     paths: {
-        'underscore': 'vendor/underscore',
-        'Darwin' : 'src/Darwin',
-        'Preditor' : 'src/Preditor',
-        'Prey' : 'src/Prey'
+        'underscore' : 'vendor/underscore',
+        'Darwin'     : 'src/Darwin',
+        'Preditor'   : 'src/Preditor',
+        'Prey'       : 'src/Prey'
     }
 });
 

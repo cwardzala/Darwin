@@ -1,4 +1,4 @@
-define(['underscore', 'Preditor', 'Prey'], function (_,Preditor,Prey) {
+define('Darwin', ['underscore', 'Preditor', 'Prey'], function (_,Preditor,Prey) {
     var Darwin = function (options) {
         this.options = _.extend({
             rows: 5,
