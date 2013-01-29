@@ -1,8 +1,8 @@
 define('Preditor', ['underscore'], function (_) {
-    var Preditor = function (visualAcuity, born) {
+    var Preditor = function (score, birth) {
         this.type = "preditor";
-        this.born = born || 0;
-        this.visualAcuity = visualAcuity || 0;
+        this.birth = birth || 0;
+        this.score = score || 2;
     };
 
     Preditor.prototype.reproduce = function(cell) {

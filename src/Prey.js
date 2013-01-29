@@ -1,8 +1,8 @@
 define('Prey', ['underscore'], function (_) {
-    var Prey = function (camouflage, born) {
+    var Prey = function (score, birth) {
         this.type = 'prey';
         this.born = born || 0;
-        this.camouflage = camouflage || 0;
+        this.score = score || 2;
     };
 
     Prey.prototype.reproduce = function(cell) {
