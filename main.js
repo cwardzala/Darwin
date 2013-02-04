@@ -2,12 +2,15 @@ require.config({
     paths: {
         'underscore' : 'vendor/underscore',
         'Darwin'     : 'src/Darwin',
-        'Preditor'   : 'src/Preditor',
+        'Predator'   : 'src/Predator',
         'Prey'       : 'src/Prey'
     }
 });
 
-require(['Darwin'], function (Darwin) {
+require(['underscore','Darwin'], function (_,Darwin) {
     var darwin = new Darwin();
     console.log(darwin);
+
+    darwin.parse();
+    darwin.cleanup();
 });
