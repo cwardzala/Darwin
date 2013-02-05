@@ -8,13 +8,19 @@ define('Darwin', ['underscore', 'Predator', 'Prey'], function (_,Predator,Prey) 
             minScore: 2,
             maxScore: 8
         }, options);
+
         this.board = [];
-        this.setup();
         this.cycle = 0;
+        this.data = {
+            predators:[],
+            prey:[]
+        };
         this.pool = {
             predators:[],
             prey:[]
         };
+
+        this.setup();
 
         return this;
     };
@@ -38,22 +44,28 @@ define('Darwin', ['underscore', 'Predator', 'Prey'], function (_,Predator,Prey) 
     };
 
     Darwin.prototype.add = function (type) {
-        if (!this.options[type]) { return; }
-        for (var pi = 0; pi <= this.options[type]; pi++) {
+        if (!this.options[type] && !this.pool[type].length) { return; }
+        var pool = this.pool[type] && this.pool[type].length ? this.pool[type].length : this.options[type];
+
+        for (var pi = 0; pi < this.options[type]; pi++) {
             var item;
 
             var row = _.random(this.options.rows - 1);
             var col = _.random(this.options.columns - 1);
             var score = _.random(this.options.minScore, this.options.maxScore);
 
-
-            if (type == 'predators') {
-                item = new Predator(score);
-            } else {
-                item = new Prey(score);
+            if (this.pool[type].length) {
+                item = this.pool[type][pi];
+            } else if (this.cycle == 0) {
+                if (type == 'predators') {
+                    item = new Predator(score);
+                } else {
+                    item = new Prey(score);
+                }
             }
             this.board[row][col][type].push(item);
         }
+
     };
 
     var getHighest = function (memo, item) {
@@ -100,19 +112,12 @@ define('Darwin', ['underscore', 'Predator', 'Prey'], function (_,Predator,Prey) 
             lowestPrey = prey.length ? _.reduce(prey, getLowest) : null;
 
             console.log('Cell ' + [ri,ci].join(':'));
-            console.log(cell);
             console.log([cell.predators.length, cell.prey.length]);
-
-            /*if (highestPredator && lowestPrey && highestPredator.score > lowestPrey.score) {
-
-                highestPredator.eat(lowestPrey, cell);
-
-                console.log([cell.predators.length, cell.prey.length]);
-            }*/
 
             if (predators.length && prey.length) {
 
                 _.each(prey, function (item) {
+
                     highestPredator = _.reduce(predators, getHighest);
                     if (highestPredator.score > item.score) {
                         highestPredator.eat(item,cell);
@@ -149,15 +154,14 @@ define('Darwin', ['underscore', 'Predator', 'Prey'], function (_,Predator,Prey) 
                 });
             }
 
-
-
             console.log('--');
         });
     };
 
     Darwin.prototype.cleanup = function () {
         var _this = this;
-        _this.eachCell(function (cell, ci, row, ri) {
+        //this.pool = { predators: [], prey: [] };
+        this.eachCell(function (cell, ci, row, ri) {
             _.each(cell.predators, function (item) {
                 _this.pool.predators.push(item);
             });
@@ -165,12 +169,12 @@ define('Darwin', ['underscore', 'Predator', 'Prey'], function (_,Predator,Prey) 
                 _this.pool.prey.push(item);
             });
         });
-        console.log(_this.pool);
-        //this.cycle++;
+
+        this.data.predators.push(_this.pool.predators.length);
+        this.data.prey.push(_this.pool.prey.length);
     };
 
-    Darwin.prototype.setup = function () {
-
+    Darwin.prototype.createBoard = function () {
         for(var ri = 0; ri < this.options.rows; ri++) {
             var row = [];
             for (var ci = 0; ci < this.options.columns; ci++) {
@@ -180,6 +184,23 @@ define('Darwin', ['underscore', 'Predator', 'Prey'], function (_,Predator,Prey) 
                 });
             }
             this.board.push(row);
+        }
+    };
+
+    Darwin.prototype.run = function (times) {
+        var _this = this;
+        for (var t = 0; t < times; t++) {
+            _this.cycle = t;
+            _this.setup();
+            _this.parse();
+            _this.cleanup();
+        }
+    };
+
+    Darwin.prototype.setup = function () {
+
+        if (this.cycle == 0) {
+            this.createBoard();
         }
 
         this.add('predators');
